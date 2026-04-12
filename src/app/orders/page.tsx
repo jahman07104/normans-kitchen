@@ -24,6 +24,13 @@ type OrdersPageProps = {
   searchParams: Promise<{ status?: string; from?: string; to?: string }>;
 };
 
+type DatePreset = {
+  key: "today" | "last7" | "month";
+  label: string;
+  from: string;
+  to: string;
+};
+
 function parseStatus(raw?: string): "all" | OrderStatus {
   const allowed = new Set(statusFilters.map((item) => item.value));
   if (!raw || !allowed.has(raw as "all" | OrderStatus)) {
@@ -48,7 +55,11 @@ function parseDateEnd(raw?: string): Date | undefined {
   return Number.isNaN(parsed.valueOf()) ? undefined : parsed;
 }
 
-function buildFilterHref(status: "all" | OrderStatus, from?: string, to?: string): string {
+function buildFilterHref(
+  status: "all" | OrderStatus,
+  from?: string,
+  to?: string,
+): string {
   const query = new URLSearchParams();
   if (status !== "all") {
     query.set("status", status);
@@ -63,6 +74,45 @@ function buildFilterHref(status: "all" | OrderStatus, from?: string, to?: string
   return text.length > 0 ? `/orders?${text}` : "/orders";
 }
 
+function toIsoDay(date: Date): string {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function getDatePresets(): DatePreset[] {
+  const now = new Date();
+  const todayStart = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
+
+  const sevenDaysAgo = new Date(todayStart);
+  sevenDaysAgo.setUTCDate(sevenDaysAgo.getUTCDate() - 6);
+
+  const monthStart = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+  );
+
+  const today = toIsoDay(todayStart);
+
+  return [
+    { key: "today", label: "Today", from: today, to: today },
+    {
+      key: "last7",
+      label: "Last 7 Days",
+      from: toIsoDay(sevenDaysAgo),
+      to: today,
+    },
+    {
+      key: "month",
+      label: "This Month",
+      from: toIsoDay(monthStart),
+      to: today,
+    },
+  ];
+}
+
 export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   const cookieStore = await cookies();
   const adminSession = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
@@ -72,6 +122,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
 
   const params = await searchParams;
   const activeStatus = parseStatus(params.status);
+  const datePresets = getDatePresets();
   const fromDate = parseDateStart(params.from);
   const toDate = parseDateEnd(params.to);
   const orders = await readOrders({
@@ -85,7 +136,9 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
       <section className="mx-auto flex w-full max-w-6xl flex-col gap-6">
         <header className="flex flex-wrap items-center justify-between gap-3 rounded-3xl border border-white/10 bg-white/5 p-5">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-amber-300">Order Management</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-amber-300">
+              Order Management
+            </p>
             <h1 className="mt-1 text-3xl font-black">All Orders</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -129,7 +182,11 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           method="get"
           className="flex flex-wrap items-end gap-3 rounded-2xl border border-white/10 bg-zinc-900 p-4"
         >
-          <input type="hidden" name="status" value={activeStatus === "all" ? "" : activeStatus} />
+          <input
+            type="hidden"
+            name="status"
+            value={activeStatus === "all" ? "" : activeStatus}
+          />
           <label className="text-xs font-bold uppercase tracking-[0.12em] text-zinc-300">
             From
             <input
@@ -160,6 +217,26 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           >
             Clear Dates
           </Link>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {datePresets.map((preset) => {
+              const active =
+                params.from === preset.from && params.to === preset.to;
+              return (
+                <Link
+                  key={preset.key}
+                  href={buildFilterHref(activeStatus, preset.from, preset.to)}
+                  className={`rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-[0.1em] ${
+                    active
+                      ? "bg-emerald-500 text-emerald-950"
+                      : "border border-zinc-600 text-zinc-200"
+                  }`}
+                >
+                  {preset.label}
+                </Link>
+              );
+            })}
+          </div>
         </form>
 
         <OrdersManagementList orders={orders} />

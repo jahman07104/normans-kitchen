@@ -12,6 +12,7 @@ This is a Next.js + TypeScript starter for a Jamaican cookshop-focused business 
 - Orders API route at `/api/orders` with Prisma + PostgreSQL
 - Admin login at `/admin/login` for protected operations
 - Full Orders management page at `/orders` with status and date filters
+- Quick date presets on Orders page: Today, Last 7 Days, This Month
 - Bulk order status API route at `/api/orders/bulk-status`
 
 ## Run Locally
