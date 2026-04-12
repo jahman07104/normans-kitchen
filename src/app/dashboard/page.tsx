@@ -1,10 +1,24 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import AdminSignoutButton from "@/components/admin-signout-button";
+import OrderStatusForm from "@/components/order-status-form";
+import {
+  ADMIN_SESSION_COOKIE,
+  isValidAdminSessionValue,
+} from "@/lib/admin-auth";
 import { menuItems } from "@/lib/menu-data";
 import { readOrders } from "@/lib/order-store";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  const cookieStore = await cookies();
+  const adminSession = cookieStore.get(ADMIN_SESSION_COOKIE)?.value;
+  if (!isValidAdminSessionValue(adminSession)) {
+    redirect("/admin/login");
+  }
+
   const storedOrders = await readOrders();
   const todaysOrders = storedOrders.length;
   const avgTicket =
@@ -52,6 +66,7 @@ export default async function DashboardPage() {
           >
             Back To Storefront
           </Link>
+          <AdminSignoutButton />
         </header>
 
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -104,11 +119,7 @@ export default async function DashboardPage() {
                     <p className="text-sm font-semibold text-amber-200">
                       ${order.subtotal.toFixed(2)}
                     </p>
-                    <p className="rounded-full bg-amber-300/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-200">
-                      {order.orderType === "pickup"
-                        ? "Ready For Pickup"
-                        : "Delivery Queue"}
-                    </p>
+                    <OrderStatusForm orderId={order.id} initialStatus={order.status} />
                   </div>
                 </li>
               ))}

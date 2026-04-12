@@ -12,12 +12,21 @@ enum OrderType {
   delivery
 }
 
+enum OrderStatus {
+  new
+  in_kitchen
+  ready
+  delivered
+  cancelled
+}
+
 model Order {
   id            Int         @id @default(autoincrement())
   publicId      String      @unique @default(uuid())
   customerName  String
   customerPhone String
   orderType     OrderType
+  status        OrderStatus @default(new)
   address       String?
   notes         String?
   subtotal      Decimal     @db.Decimal(10, 2)

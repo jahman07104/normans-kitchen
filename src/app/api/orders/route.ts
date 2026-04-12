@@ -26,8 +26,20 @@ function isValidItem(item: OrderItemInput) {
 }
 
 export async function GET() {
-  const orders = await readOrders();
-  return NextResponse.json({ orders });
+  try {
+    const orders = await readOrders();
+    return NextResponse.json({ orders });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unable to load orders.",
+      },
+      { status: 500 },
+    );
+  }
 }
 
 export async function POST(req: Request) {
@@ -91,6 +103,7 @@ export async function POST(req: Request) {
     customerName: body.customerName.trim(),
     customerPhone: body.customerPhone.trim(),
     orderType: body.orderType,
+    status: "new",
     address: body.orderType === "delivery" ? body.address?.trim() : undefined,
     notes: body.notes?.trim() || undefined,
     items: computedItems,
@@ -98,7 +111,18 @@ export async function POST(req: Request) {
     createdAt: new Date().toISOString(),
   };
 
-  await createOrder(order);
-
-  return NextResponse.json({ order }, { status: 201 });
+  try {
+    await createOrder(order);
+    return NextResponse.json({ order }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unable to create order.",
+      },
+      { status: 500 },
+    );
+  }
 }

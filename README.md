@@ -6,10 +6,11 @@ This is a Next.js + TypeScript starter for a Jamaican cookshop-focused business 
 
 - Customer-facing storefront landing page
 - Featured Jamaican menu section
-- Operator dashboard skeleton with KPI cards and live order queue
+- Operator dashboard with KPI cards, live queue, and status controls
 - Cart and checkout flow at `/order`
 - Order confirmation page at `/order/confirmation`
-- Orders API route at `/api/orders` with Prisma + PostgreSQL support
+- Orders API route at `/api/orders` with Prisma + PostgreSQL
+- Admin login at `/admin/login` for protected operations
 
 ## Run Locally
 
@@ -31,7 +32,7 @@ npm run build
 ## Phase 2 Database Setup (PostgreSQL + Prisma)
 
 1. Copy `.env.example` to `.env.local`.
-2. Set your `DATABASE_URL` in `.env.local`.
+2. Set `DATABASE_URL`, `ADMIN_PASSWORD`, and `ADMIN_SESSION_SECRET` in `.env.local`.
 3. Generate Prisma client:
 
 ```bash
@@ -43,6 +44,8 @@ npm run prisma:generate
 ```bash
 npm run prisma:push
 ```
+
+This app now requires PostgreSQL. It will not run order read/write APIs without `DATABASE_URL`.
 
 5. Optional local DB UI:
 
@@ -58,12 +61,16 @@ If `DATABASE_URL` is not set, the app falls back to local JSON storage in `data/
 - `src/app/dashboard/page.tsx`: operator dashboard
 - `src/app/order/page.tsx`: cart and checkout
 - `src/app/order/confirmation/page.tsx`: confirmation screen
+- `src/app/admin/login/page.tsx`: admin login screen
 - `src/app/api/orders/route.ts`: order GET and POST route handlers
+- `src/app/api/orders/[orderId]/status/route.ts`: order status updates
+- `src/app/api/admin/login/route.ts`: admin login endpoint
+- `src/app/api/admin/logout/route.ts`: admin logout endpoint
 - `prisma/schema.prisma`: Postgres schema for orders and line items
 - `src/lib/prisma.ts`: Prisma client singleton
+- `src/lib/admin-auth.ts`: admin session helpers
 - `src/lib/menu-data.ts`: starter menu and KPI data
-- `src/lib/order-store.ts`: persistence utility (Prisma with JSON fallback)
-- `data/orders.json`: fallback local records for development
+- `src/lib/order-store.ts`: PostgreSQL persistence utility
 - `src/app/globals.css`: theme and typography
 
 ## Push to GitHub
