@@ -7,6 +7,9 @@ This is a Next.js + TypeScript starter for a Jamaican cookshop-focused business 
 - Customer-facing storefront landing page
 - Featured Jamaican menu section
 - Operator dashboard skeleton with KPI cards and live order queue
+- Cart and checkout flow at `/order`
+- Order confirmation page at `/order/confirmation`
+- Orders API route at `/api/orders` with local JSON persistence
 
 ## Run Locally
 
@@ -29,7 +32,12 @@ npm run build
 
 - `src/app/page.tsx`: customer storefront
 - `src/app/dashboard/page.tsx`: operator dashboard
+- `src/app/order/page.tsx`: cart and checkout
+- `src/app/order/confirmation/page.tsx`: confirmation screen
+- `src/app/api/orders/route.ts`: order GET and POST route handlers
 - `src/lib/menu-data.ts`: starter menu and KPI data
+- `src/lib/order-store.ts`: local order persistence utility
+- `data/orders.json`: local order records for development
 - `src/app/globals.css`: theme and typography
 
 ## Push to GitHub

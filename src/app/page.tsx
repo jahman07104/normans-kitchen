@@ -57,6 +57,12 @@ export default function Home() {
                 Explore Dishes
               </a>
               <Link
+                className="rounded-full bg-zinc-900 px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-zinc-100 transition hover:-translate-y-0.5 hover:bg-zinc-700"
+                href="/order"
+              >
+                Start Order
+              </Link>
+              <Link
                 className="rounded-full border border-zinc-900/20 bg-white px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-zinc-900 transition hover:-translate-y-0.5 hover:bg-amber-100"
                 href="/dashboard"
               >
@@ -129,6 +135,14 @@ export default function Home() {
                   <span className="rounded-full bg-orange-100 px-3 py-1 text-orange-800">
                     {item.available ? "In Service" : "Sold Out"}
                   </span>
+                </div>
+                <div className="mt-4">
+                  <Link
+                    href="/order"
+                    className="inline-flex rounded-full bg-zinc-900 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-zinc-100 transition hover:bg-zinc-700"
+                  >
+                    Add In Checkout
+                  </Link>
                 </div>
               </article>
             ))}

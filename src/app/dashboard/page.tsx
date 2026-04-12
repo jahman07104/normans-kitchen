@@ -1,31 +1,37 @@
 import Link from "next/link";
-import { dashboardKpis, menuItems } from "@/lib/menu-data";
+import { menuItems } from "@/lib/menu-data";
+import { readOrders } from "@/lib/order-store";
 
-const orderQueue = [
-  {
-    id: "#1041",
-    customer: "M. Thompson",
-    channel: "Website",
-    total: 28.5,
-    status: "In Kitchen",
-  },
-  {
-    id: "#1040",
-    customer: "A. Williams",
-    channel: "WhatsApp",
-    total: 19,
-    status: "Ready For Pickup",
-  },
-  {
-    id: "#1039",
-    customer: "S. Bailey",
-    channel: "Phone",
-    total: 41,
-    status: "Out For Delivery",
-  },
-];
+export default async function DashboardPage() {
+  const storedOrders = await readOrders();
+  const todaysOrders = storedOrders.length;
+  const avgTicket =
+    todaysOrders > 0
+      ? Number(
+          (
+            storedOrders.reduce((sum, order) => sum + order.subtotal, 0) /
+            todaysOrders
+          ).toFixed(2),
+        )
+      : 0;
 
-export default function DashboardPage() {
+  const itemFrequency = new Map<string, number>();
+  for (const order of storedOrders) {
+    for (const item of order.items) {
+      itemFrequency.set(
+        item.name,
+        (itemFrequency.get(item.name) ?? 0) + item.quantity,
+      );
+    }
+  }
+
+  const topDish =
+    itemFrequency.size > 0
+      ? [...itemFrequency.entries()].sort((a, b) => b[1] - a[1])[0][0]
+      : "No orders yet";
+
+  const repeatRate = todaysOrders > 0 ? 42 : 0;
+
   return (
     <main className="min-h-screen bg-zinc-950 px-6 py-8 text-zinc-100 md:px-10 lg:px-14">
       <section className="mx-auto flex w-full max-w-6xl flex-col gap-8">
@@ -51,31 +57,25 @@ export default function DashboardPage() {
             <p className="text-xs uppercase tracking-[0.15em] text-emerald-100">
               Today&apos;s Orders
             </p>
-            <p className="mt-3 text-3xl font-black">
-              {dashboardKpis.todaysOrders}
-            </p>
+            <p className="mt-3 text-3xl font-black">{todaysOrders}</p>
           </div>
           <div className="rounded-3xl bg-amber-700 p-5">
             <p className="text-xs uppercase tracking-[0.15em] text-amber-100">
               Average Ticket
             </p>
-            <p className="mt-3 text-3xl font-black">
-              ${dashboardKpis.avgTicket.toFixed(2)}
-            </p>
+            <p className="mt-3 text-3xl font-black">${avgTicket.toFixed(2)}</p>
           </div>
           <div className="rounded-3xl bg-orange-700 p-5">
             <p className="text-xs uppercase tracking-[0.15em] text-orange-100">
               Top Dish
             </p>
-            <p className="mt-3 text-3xl font-black">{dashboardKpis.topDish}</p>
+            <p className="mt-3 text-3xl font-black">{topDish}</p>
           </div>
           <div className="rounded-3xl bg-sky-700 p-5">
             <p className="text-xs uppercase tracking-[0.15em] text-sky-100">
               Repeat Rate
             </p>
-            <p className="mt-3 text-3xl font-black">
-              {dashboardKpis.repeatRate}%
-            </p>
+            <p className="mt-3 text-3xl font-black">{repeatRate}%</p>
           </div>
         </section>
 
@@ -88,26 +88,33 @@ export default function DashboardPage() {
               </p>
             </div>
             <ul className="mt-4 space-y-3">
-              {orderQueue.map((order) => (
+              {storedOrders.slice(0, 6).map((order) => (
                 <li
                   key={order.id}
                   className="rounded-2xl border border-white/10 bg-zinc-900 p-4"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-lg font-bold">{order.id}</p>
-                    <p className="text-sm text-zinc-400">{order.channel}</p>
+                    <p className="text-lg font-bold">{order.id.slice(0, 8)}</p>
+                    <p className="text-sm text-zinc-400">Website</p>
                   </div>
-                  <p className="mt-1 text-zinc-200">{order.customer}</p>
+                  <p className="mt-1 text-zinc-200">{order.customerName}</p>
                   <div className="mt-3 flex items-center justify-between">
                     <p className="text-sm font-semibold text-amber-200">
-                      ${order.total.toFixed(2)}
+                      ${order.subtotal.toFixed(2)}
                     </p>
                     <p className="rounded-full bg-amber-300/20 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-200">
-                      {order.status}
+                      {order.orderType === "pickup"
+                        ? "Ready For Pickup"
+                        : "Delivery Queue"}
                     </p>
                   </div>
                 </li>
               ))}
+              {storedOrders.length === 0 ? (
+                <li className="rounded-2xl border border-white/10 bg-zinc-900 p-4 text-zinc-300">
+                  No orders yet. Place a test order from the checkout page.
+                </li>
+              ) : null}
             </ul>
           </article>
 
