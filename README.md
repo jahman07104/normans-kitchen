@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Norman's Kitchen Web App Starter
 
-## Getting Started
+This is a Next.js + TypeScript starter for a Jamaican cookshop-focused business in the diaspora.
 
-First, run the development server:
+## Current MVP Screens
+
+- Customer-facing storefront landing page
+- Featured Jamaican menu section
+- Operator dashboard skeleton with KPI cards and live order queue
+
+## Run Locally
 
 ```bash
+cd /Users/patrickharrison/Desktop/Normans_Kitchen
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build and Lint
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run build
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app/page.tsx`: customer storefront
+- `src/app/dashboard/page.tsx`: operator dashboard
+- `src/lib/menu-data.ts`: starter menu and KPI data
+- `src/app/globals.css`: theme and typography
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Push to GitHub
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create an empty GitHub repository (for example: `normans-kitchen`).
+2. Run:
 
-## Deploy on Vercel
+```bash
+cd /Users/patrickharrison/Desktop/Normans_Kitchen
+git add .
+git commit -m "Initial Norman's Kitchen MVP"
+git branch -M main
+git remote add origin https://github.com/<your-username>/normans-kitchen.git
+git push -u origin main
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+If a remote already exists, update it with:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+git remote set-url origin https://github.com/<your-username>/normans-kitchen.git
+```
