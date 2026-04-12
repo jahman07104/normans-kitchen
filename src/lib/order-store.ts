@@ -38,15 +38,20 @@ export type CreateOrderInput = {
   subtotal: number;
 };
 
+type ReadOrdersOptions = {
+  status?: OrderStatus;
+};
+
 function requireDatabaseUrl() {
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is required. Configure PostgreSQL in .env.local.");
   }
 }
 
-export async function readOrders(): Promise<OrderRecord[]> {
+export async function readOrders(options?: ReadOrdersOptions): Promise<OrderRecord[]> {
   requireDatabaseUrl();
   const dbOrders = await prisma.order.findMany({
+    where: options?.status ? { status: options.status as PrismaOrderStatus } : undefined,
     include: { items: true },
     orderBy: { createdAt: "desc" },
   });

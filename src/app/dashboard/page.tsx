@@ -66,6 +66,12 @@ export default async function DashboardPage() {
           >
             Back To Storefront
           </Link>
+          <Link
+            href="/orders"
+            className="rounded-full border border-zinc-500 px-4 py-2 text-sm font-semibold text-zinc-100 transition hover:bg-zinc-800"
+          >
+            Manage Orders
+          </Link>
           <AdminSignoutButton />
         </header>
 

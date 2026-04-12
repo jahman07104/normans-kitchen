@@ -10,10 +10,6 @@ function readEnv(name: string): string {
   return value.trim();
 }
 
-export function getAdminPassword(): string {
-  return readEnv("ADMIN_PASSWORD");
-}
-
 function getSessionSecret(): string {
   return readEnv("ADMIN_SESSION_SECRET");
 }

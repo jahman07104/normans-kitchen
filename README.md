@@ -11,6 +11,7 @@ This is a Next.js + TypeScript starter for a Jamaican cookshop-focused business 
 - Order confirmation page at `/order/confirmation`
 - Orders API route at `/api/orders` with Prisma + PostgreSQL
 - Admin login at `/admin/login` for protected operations
+- Full Orders management page at `/orders` with status filters
 
 ## Run Locally
 
@@ -32,7 +33,7 @@ npm run build
 ## Phase 2 Database Setup (PostgreSQL + Prisma)
 
 1. Copy `.env.example` to `.env.local`.
-2. Set `DATABASE_URL`, `ADMIN_PASSWORD`, and `ADMIN_SESSION_SECRET` in `.env.local`.
+2. Set `DATABASE_URL` and `ADMIN_SESSION_SECRET` in `.env.local`.
 3. Generate Prisma client:
 
 ```bash
@@ -45,6 +46,17 @@ npm run prisma:generate
 npm run prisma:push
 ```
 
+5. Seed an admin user and sample orders:
+
+```bash
+npm run db:seed
+```
+
+Default seeded admin credentials (override via env):
+
+- Email: `admin@normanskitchen.com`
+- Password: `ChangeMeNow123!`
+
 This app now requires PostgreSQL. It will not run order read/write APIs without `DATABASE_URL`.
 
 5. Optional local DB UI:
@@ -53,12 +65,11 @@ This app now requires PostgreSQL. It will not run order read/write APIs without 
 npm run prisma:studio
 ```
 
-If `DATABASE_URL` is not set, the app falls back to local JSON storage in `data/orders.json` for development.
-
 ## Project Structure
 
 - `src/app/page.tsx`: customer storefront
 - `src/app/dashboard/page.tsx`: operator dashboard
+- `src/app/orders/page.tsx`: full orders management with filters
 - `src/app/order/page.tsx`: cart and checkout
 - `src/app/order/confirmation/page.tsx`: confirmation screen
 - `src/app/admin/login/page.tsx`: admin login screen
@@ -67,8 +78,10 @@ If `DATABASE_URL` is not set, the app falls back to local JSON storage in `data/
 - `src/app/api/admin/login/route.ts`: admin login endpoint
 - `src/app/api/admin/logout/route.ts`: admin logout endpoint
 - `prisma/schema.prisma`: Postgres schema for orders and line items
+- `prisma/seed.mjs`: seed script for admin user and sample orders
 - `src/lib/prisma.ts`: Prisma client singleton
 - `src/lib/admin-auth.ts`: admin session helpers
+- `src/lib/password.ts`: password hashing and verification
 - `src/lib/menu-data.ts`: starter menu and KPI data
 - `src/lib/order-store.ts`: PostgreSQL persistence utility
 - `src/app/globals.css`: theme and typography
