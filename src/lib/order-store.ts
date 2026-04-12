@@ -40,6 +40,8 @@ export type CreateOrderInput = {
 
 type ReadOrdersOptions = {
   status?: OrderStatus;
+  from?: Date;
+  to?: Date;
 };
 
 function requireDatabaseUrl() {
@@ -50,8 +52,30 @@ function requireDatabaseUrl() {
 
 export async function readOrders(options?: ReadOrdersOptions): Promise<OrderRecord[]> {
   requireDatabaseUrl();
+  const where: {
+    status?: PrismaOrderStatus;
+    createdAt?: {
+      gte?: Date;
+      lte?: Date;
+    };
+  } = {};
+
+  if (options?.status) {
+    where.status = options.status as PrismaOrderStatus;
+  }
+
+  if (options?.from || options?.to) {
+    where.createdAt = {};
+    if (options.from) {
+      where.createdAt.gte = options.from;
+    }
+    if (options.to) {
+      where.createdAt.lte = options.to;
+    }
+  }
+
   const dbOrders = await prisma.order.findMany({
-    where: options?.status ? { status: options.status as PrismaOrderStatus } : undefined,
+    where,
     include: { items: true },
     orderBy: { createdAt: "desc" },
   });
@@ -108,4 +132,16 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
     where: { publicId: orderId },
     data: { status: status as PrismaOrderStatus },
   });
+}
+
+export async function updateOrderStatuses(
+  orderIds: string[],
+  status: OrderStatus,
+): Promise<number> {
+  requireDatabaseUrl();
+  const result = await prisma.order.updateMany({
+    where: { publicId: { in: orderIds } },
+    data: { status: status as PrismaOrderStatus },
+  });
+  return result.count;
 }
