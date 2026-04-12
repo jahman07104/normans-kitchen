@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderType {
+  pickup
+  delivery
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  publicId      String      @unique @default(uuid())
+  customerName  String
+  customerPhone String
+  orderType     OrderType
+  address       String?
+  notes         String?
+  subtotal      Decimal     @db.Decimal(10, 2)
+  createdAt     DateTime    @default(now())
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  menuItemId String
+  name       String
+  quantity   Int
+  unitPrice  Decimal  @db.Decimal(10, 2)
+  lineTotal  Decimal  @db.Decimal(10, 2)
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}

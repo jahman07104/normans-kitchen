@@ -9,7 +9,7 @@ This is a Next.js + TypeScript starter for a Jamaican cookshop-focused business 
 - Operator dashboard skeleton with KPI cards and live order queue
 - Cart and checkout flow at `/order`
 - Order confirmation page at `/order/confirmation`
-- Orders API route at `/api/orders` with local JSON persistence
+- Orders API route at `/api/orders` with Prisma + PostgreSQL support
 
 ## Run Locally
 
@@ -28,6 +28,30 @@ npm run lint
 npm run build
 ```
 
+## Phase 2 Database Setup (PostgreSQL + Prisma)
+
+1. Copy `.env.example` to `.env.local`.
+2. Set your `DATABASE_URL` in `.env.local`.
+3. Generate Prisma client:
+
+```bash
+npm run prisma:generate
+```
+
+4. Sync schema to your database:
+
+```bash
+npm run prisma:push
+```
+
+5. Optional local DB UI:
+
+```bash
+npm run prisma:studio
+```
+
+If `DATABASE_URL` is not set, the app falls back to local JSON storage in `data/orders.json` for development.
+
 ## Project Structure
 
 - `src/app/page.tsx`: customer storefront
@@ -35,9 +59,11 @@ npm run build
 - `src/app/order/page.tsx`: cart and checkout
 - `src/app/order/confirmation/page.tsx`: confirmation screen
 - `src/app/api/orders/route.ts`: order GET and POST route handlers
+- `prisma/schema.prisma`: Postgres schema for orders and line items
+- `src/lib/prisma.ts`: Prisma client singleton
 - `src/lib/menu-data.ts`: starter menu and KPI data
-- `src/lib/order-store.ts`: local order persistence utility
-- `data/orders.json`: local order records for development
+- `src/lib/order-store.ts`: persistence utility (Prisma with JSON fallback)
+- `data/orders.json`: fallback local records for development
 - `src/app/globals.css`: theme and typography
 
 ## Push to GitHub

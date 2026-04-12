@@ -2,6 +2,8 @@ import Link from "next/link";
 import { menuItems } from "@/lib/menu-data";
 import { readOrders } from "@/lib/order-store";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const storedOrders = await readOrders();
   const todaysOrders = storedOrders.length;
