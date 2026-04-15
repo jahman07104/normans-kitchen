@@ -41,7 +41,7 @@ export default function Home() {
               Built For Jamaican Cookshops In The Diaspora
             </p>
             <h1 className="display text-5xl leading-[0.92] text-balance text-zinc-900 md:text-7xl">
-              Serve iconic yard food faster with a digital storefront that feels
+              Serve iconic Yaad food faster with a digital storefront that feels
               local.
             </h1>
             <p className="max-w-xl text-lg leading-relaxed text-zinc-700">
