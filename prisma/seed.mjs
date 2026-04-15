@@ -1,5 +1,9 @@
 import { PrismaClient, OrderStatus, OrderType } from "@prisma/client";
 import { randomBytes, scryptSync } from "crypto";
+import { config as loadEnv } from "dotenv";
+
+loadEnv({ path: ".env.local" });
+loadEnv();
 
 const prisma = new PrismaClient();
 
